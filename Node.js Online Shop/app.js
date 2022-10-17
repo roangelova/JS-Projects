@@ -6,7 +6,7 @@ const app = express();
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
 
-
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/admin',adminRoutes); //adds the admin part as a filter + commo starting segment
 app.use(shopRoutes);
