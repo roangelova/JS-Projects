@@ -1,0 +1,23 @@
+[
+    {
+        "id": "1",
+        "title": "A Book",
+        "imageUrl": "https://www.publicdomainpictures.net/pictures/10000/velka/1-1210009435EGmE.jpg",
+        "description": "This is an awesome book!",
+        "price": "19"
+    },
+    {
+        "id": "2",
+        "title": "BMW M5 Competition",
+        "imageUrl": "https://seater.rent/wp-content/uploads/2021/12/BMW-M5-Competition_3-1024x683.jpg",
+        "description": "Bmw sucks",
+        "price": "10000"
+    },
+    {
+        "id": "3",
+        "title": "The BATsaMobile",
+        "imageUrl": "https://media.carsandbids.com/cdn-cgi/image/width=2080,quality=70/1477bbe21e8d6b5e719c7c3ccab577fd47dd8cc3/photos/KVbmg5m6.sRvu6-l-Z-(edit).jpg?t=163789565053",
+        "description": "This is Pavkata's car. If you see it, RUN FOR YOUR LIFE!",
+        "price": "0.99"
+    }
+]
