@@ -6,8 +6,9 @@ const adminController = require('../controllers/admin');
 
 const router = express.Router();
 
-router.get('/add-product', adminController.getAddProduct); //we just  pass a reference to the func
-router.get('/products', adminController.getProducts); 
+router.get('/add-product', adminController.getAddProduct);
+
+router.get('/products', adminController.getProducts);
 
 router.post('/add-product', adminController.postAddProduct);
 
