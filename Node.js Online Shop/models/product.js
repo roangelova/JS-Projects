@@ -12,11 +12,11 @@ const getProductsFromFile = cb => {
     if (err) {
       cb([]);
     } else {
-        try {
-            cb(JSON.parse(fileContent));
-        } catch (err) {
-            cb([]);
-        }
+      try {
+        cb(JSON.parse(fileContent));
+      } catch (err) {
+        cb([]);
+      }
     }
   });
 };
@@ -41,5 +41,12 @@ module.exports = class Product {
 
   static fetchAll(cb) {
     getProductsFromFile(cb);
+  }
+
+  static getById(id, cb) {
+    getProductsFromFile(products => {
+      const product = products.find(x => x.id === id);
+      cb(product);
+    })
   }
 };
