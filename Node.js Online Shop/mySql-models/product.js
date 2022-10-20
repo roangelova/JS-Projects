@@ -1,5 +1,5 @@
 const { Sequelize } = require('sequelize')
-const sequelize = require('../helpers/database');
+const sequelize = require('../helpers/database-mySql');
 
 const Product = sequelize.define('product', {
   id: {

@@ -1,5 +1,5 @@
-const Product = require('../models/product');
-const Cart = require('../models/cart');
+const Product = require('../mySql-models/product');
+const Cart = require('../mySql-models/cart');
 
 
 exports.getProducts = (req, res, next) => {

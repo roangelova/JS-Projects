@@ -1,9 +1,14 @@
-const { Sequelize } = require('sequelize');
+const mongodb = require('mongodb');
+const MongoClient = mongodb.MongoClient;
 
-const sequelize = new Sequelize(
-    'shop-js', 'root', 'P@ssw1rd#', 
-    {dialect: 'mysql', host: 'localhost'}
-);
+const uri = 'mongodb+srv://roan97:P@ssw1rd@shop-js.2e3xpfv.mongodb.net/?retryWrites=true&w=majority'
 
-module.exports = sequelize;
-//creates a pool 
+const MongoConnect = callback => {
+    const client = new MongoClient(uri, { useNewUrlParser: true });
+    client.connect(err => {
+        console.log("connected");
+        callback(client);
+        client.close();
+    });
+};
+module.exports = MongoConnect;
