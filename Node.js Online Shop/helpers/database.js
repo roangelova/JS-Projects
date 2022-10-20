@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 
 const sequelize = new Sequelize(
-    'shop-js', 'root', 'password', 
+    'shop-js', 'root', 'P@ssw1rd#', 
     {dialect: 'mysql', host: 'localhost'}
 );
 
