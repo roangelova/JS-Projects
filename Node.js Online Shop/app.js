@@ -1,8 +1,11 @@
 const path = require('path');
 const sequelize = require('./helpers/database');
-
 const express = require('express');
 const bodyParser = require('body-parser');
+
+const Product = require('./models/product');
+const User = require('./models/user');
+
 
 const app = express();
 
@@ -22,7 +25,11 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
-sequelize.sync()
+Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
+User.hasMany(Product);
+
+//force will overwrite with the new tables
+sequelize.sync({force: true})
     .then(res => {
         console.log(res)
     })
