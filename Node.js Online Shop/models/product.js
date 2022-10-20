@@ -1,5 +1,4 @@
-const Sequelize = require('sequelize');
-
+const { Sequelize } = require('sequelize')
 const sequelize = require('../helpers/database');
 
 const Product = sequelize.define('product', {
