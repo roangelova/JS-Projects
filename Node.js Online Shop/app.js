@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
-const MongoConnect = require('./helpers/database');
+const MongoConnect = require('./helpers/database').MongoConnect;
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
