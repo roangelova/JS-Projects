@@ -20,6 +20,16 @@ const errorController = require('./controllers/error.js');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+//register a middleware
+app.use((req, res, next) => {
+    User.findById(1)
+      .then(user => {
+        req.user = user;
+        next();
+      })
+      .catch(err => console.log(err));
+  });
+
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 
@@ -28,15 +38,22 @@ app.use(errorController.get404);
 Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 User.hasMany(Product);
 
-//force will overwrite with the new tables
-sequelize.sync({force: true})
-    .then(res => {
-        console.log(res)
-    })
-    .catch(err => {
-        console.log(err)
-    });
+//create a default user
+sequelize
+  .sync()
+  .then(result => {
+    return User.findByPk(1);
+  })
+  .then(user => {
+    if (!user) {
+      return User.create({ name: 'Test', email: 'test@testov.com' });
+    }
+    return user;
+  })
+  .then(user => {
+    app.listen(3000);
+  })
+  .catch(err => {
+    console.log(err);
+  });
 
-//has a look at all of our defined models and creates tables for them
-
-app.listen(3000);
