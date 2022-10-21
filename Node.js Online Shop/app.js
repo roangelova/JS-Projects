@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const app = express();
 
 const MongoConnect = require('./helpers/database').MongoConnect;
+const User = require('./models/user')
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -17,15 +18,14 @@ const errorController = require('./controllers-mySQL/error.js');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-//register a middleware
 app.use((req, res, next) => {
-    //  User.findByPk(1)
-    //      .then(user => {
-    //          req.user = user;
-    //          next();
-    //      })
-    //      .catch(err => console.log(err));
-});
+    User.findById('5baa2528563f16379fc8a610')
+      .then(user => {
+        req.user = new User(user.name, user.email, user.cart, user._id);
+        next();
+      })
+      .catch(err => console.log(err));
+  });  
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
@@ -61,7 +61,6 @@ app.use(errorController.get404);
 //        console.log(err);
 //    });
 
-MongoConnect((client) => {
-    console.log(client)
+MongoConnect(() => {
     app.listen(3000);
 })

@@ -1,7 +1,7 @@
 const mongodb = require('mongodb');
 const MongoClient = mongodb.MongoClient;
 
-const uri = 'mongodb+srv://ЯЕЪИЕШ:JKFGSKDF@shop-js.2e3xpfv.mongodb.net/?retryWrites=true&w=majority';
+const uri = 'mongodb+srv://test:PqSlo69YGi47ul0h@shop-js.2e3xpfv.mongodb.net/?retryWrites=true&w=majority';
 //if the db does not exist, MongoDb will create it as soon as we start writing data to it
 
 let _db;
