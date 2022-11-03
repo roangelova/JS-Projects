@@ -1,5 +1,5 @@
 const mongodb = require('mongodb');
-const getDb = require('../helpers/database').getDb;
+const getDb = require('../helpers/database_withoutMongoose').getDb;
 
 const ObjectId = mongodb.ObjectId;
 

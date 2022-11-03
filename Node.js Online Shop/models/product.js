@@ -1,4 +1,4 @@
-const getDb = require('../helpers/database').getDb;
+const getDb = require('../helpers/database_withoutMongoose').getDb;
 const mongodb = require('mongodb');
 
 class Product {
