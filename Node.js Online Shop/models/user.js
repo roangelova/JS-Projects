@@ -41,6 +41,7 @@ class User {
       .updateOne(
         { _id: new ObjectId(this._id) },
         { $set: { cart: updatedCart } }
+        //it will overrite the old cart with the new cart
       );
   }
 
@@ -51,7 +52,7 @@ class User {
     });
     return db
       .collection('products')
-      .find({ _id: { $in: productIds } })
+      .find({ _id: { $in: productIds } }) //takes an array of ids
       .toArray()
       .then(products => {
         return products.map(p => {
