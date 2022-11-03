@@ -2,17 +2,25 @@ const path = require('path');
 const mongoose = require('mongoose');
 const express = require('express');
 const bodyParser = require('body-parser');
+const session = require('express-session');
+const MongoDbStore = require('connect-mongodb-session')(session);
 
 const app = express();
 
 //const MongoConnect = require('./helpers/database').MongoConnect;
 const User = require('./models/user')
 
+const store = new MongoDbStore({
+  uri: uri, 
+  collection: 'sessions'
+});
+
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 const adminRoutes = require('./routes/admin');
 const shopRoutes = require('./routes/shop');
+const authRoutes = require('./routes/auth');
 
 const errorController = require('./controllers-mySQL/error.js');
 const { uri } = require('./helpers/database_withoutMongoose');
@@ -20,10 +28,17 @@ const { uri } = require('./helpers/database_withoutMongoose');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use(session({
+  secret: 'my secret',
+  resave: false,
+  saveUninitialized: false, 
+  store : store 
+}));
+
 app.use((req, res, next) => {
-  User.findById('5baa2528563f16379fc8a610')
+  User.findById(req.session.user._id)
     .then(user => {
-      req.user = new User(user.name, user.email, user.cart, user._id);
+      req.user = user; //returns a mongoos user
       next();
     })
     .catch(err => console.log(err));
@@ -31,6 +46,7 @@ app.use((req, res, next) => {
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
+app.use(authRoutes);
 
 app.use(errorController.get404);
 
