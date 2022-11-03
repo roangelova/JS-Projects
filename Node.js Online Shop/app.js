@@ -11,7 +11,7 @@ const app = express();
 const User = require('./models/user')
 
 const store = new MongoDbStore({
-  uri: uri, 
+  uri: uri,
   collection: 'sessions'
 });
 
@@ -31,8 +31,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: 'my secret',
   resave: false,
-  saveUninitialized: false, 
-  store : store 
+  saveUninitialized: false,
+  store: store
 }));
 
 app.use((req, res, next) => {
@@ -86,18 +86,6 @@ app.use(errorController.get404);
 
 mongoose.connect(uri)
   .then(result => {
-    User.findOne().then(user => {
-      if (!user) {
-        const user = new User({
-          name: 'Rosi',
-          email: 'rosi@test.com',
-          cart: {
-            items: []
-          }
-        });
-        user.save();
-      }
-    });
     app.listen(3000);
   })
   .catch(err => {

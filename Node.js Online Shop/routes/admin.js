@@ -6,16 +6,19 @@ const adminController = require('../controllers-mySQL/admin');
 
 const router = express.Router();
 
-router.get('/add-product', adminController.getAddProduct);
+const isAuthMiddleware = require('../middlewares/isAuthMiddleware')
 
-router.get('/products', adminController.getProducts);
+router.get('/add-product', isAuthMiddleware, adminController.getAddProduct);
+//THE REQ WILL TRAVEL FROM THE LEFT TO RIGHT
 
-router.post('/add-product', adminController.postAddProduct);
+router.get('/products', isAuthMiddleware, adminController.getProducts);
 
-router.get('/edit-product/:productId', adminController.getEditProduct);
+router.post('/add-product', isAuthMiddleware, adminController.postAddProduct);
 
-router.post('/edit-product', adminController.postEditProduct);
+router.get('/edit-product/:productId', isAuthMiddleware, adminController.getEditProduct);
 
-router.post('/delete-product', adminController.postDeleteProduct);
+router.post('/edit-product', isAuthMiddleware, adminController.postEditProduct);
+
+router.post('/delete-product', isAuthMiddleware, adminController.postDeleteProduct);
 
 module.exports = router;
