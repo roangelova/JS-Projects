@@ -1,4 +1,4 @@
-const Product = require('../models/product');
+const Product = require('../models_MongoDriver/product');
 const mongodb = require('mongodb');
 
 const ObjectId = mongodb.ObjectId;
@@ -17,15 +17,15 @@ exports.postAddProduct = (req, res, next) => {
   const price = req.body.price;
   const description = req.body.description;
 
-  const product = new Product
-    ({ title: title, price: price, description: description, imageUrl: imageUrl, userId: req.user._id })
-    .save() //now provided by mongoose
+  const product = new Product(title, price, description, imageUrl, mull, req.user._id)
+    .save()
     .then(res => {
-      res.redirect('/');
+      console.log('Product has been created');
     })
     .catch(err => {
       console.log(err)
     })
+  res.redirect('/');
 };
 
 exports.getEditProduct = (req, res, next) => {
@@ -59,23 +59,18 @@ exports.postEditProduct = (req, res, next) => {
   const price = req.body.price;
   const description = req.body.description;
 
-  Product.findById(productId)
-    .then(product => {
-      product.title = title;
-      product.imageUrl = imageUrl;
-      product.price = price;
-      product.description = description;
+  const product = new Product(title, price, description, imageUrl, productId, productId);
 
-      return product.save();
-    })
+  product.save()
     .then(result => {
+      console.log('Product has been updated');
       res.redirect('/admin/products');
     })
     .catch(err => console.log(err));
 };
 
 exports.getProducts = (req, res, next) => {
-  Product.find()
+  Product.fetchAll()
     .then(products => {
       res.render('admin/products', {
         prods: products,
