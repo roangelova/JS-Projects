@@ -6,6 +6,7 @@ const session = require('express-session');
 const MongoDbStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
 const app = express();
+const flash = require('connect-flash')
 
  const uri = 'mongodb+srv://test:PqSlo69YGi47ul0h@shop-js.2e3xpfv.mongodb.net/?retryWrites=true&w=majority';
 
@@ -39,6 +40,7 @@ app.use(session({
 }));
 
 app.use(csrfProtection);
+app.use(flash()) // now we can use it anywhere in our app on the req 
 
 app.use((req, res, next) => {
   User.findById(req.session.user._id)
