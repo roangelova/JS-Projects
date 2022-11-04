@@ -4,8 +4,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const MongoDbStore = require('connect-mongodb-session')(session);
-
+const csrf = require('csurf');
 const app = express();
+
+ const uri = 'mongodb+srv://test:PqSlo69YGi47ul0h@shop-js.2e3xpfv.mongodb.net/?retryWrites=true&w=majority';
 
 //const MongoConnect = require('./helpers/database').MongoConnect;
 const User = require('./models/user')
@@ -15,6 +17,8 @@ const store = new MongoDbStore({
   collection: 'sessions'
 });
 
+const csrfProtection = csrf();
+
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
@@ -23,7 +27,6 @@ const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 
 const errorController = require('./controllers-mySQL/error.js');
-const { uri } = require('./helpers/database_withoutMongoose');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -35,6 +38,8 @@ app.use(session({
   store: store
 }));
 
+app.use(csrfProtection);
+
 app.use((req, res, next) => {
   User.findById(req.session.user._id)
     .then(user => {
@@ -43,6 +48,13 @@ app.use((req, res, next) => {
     })
     .catch(err => console.log(err));
 });
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfTpken = req.csrfToken();
+  //set local vars that are paed to every view
+  next();
+})
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
