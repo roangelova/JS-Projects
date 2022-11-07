@@ -8,7 +8,9 @@ const csrf = require('csurf');
 const app = express();
 const flash = require('connect-flash')
 
- const uri = 'mongodb+srv://test:PqSlo69YGi47ul0h@shop-js.2e3xpfv.mongodb.net/?retryWrites=true&w=majority';
+require('dotenv').config()
+
+ const uri = process.env.MONGO_URI;
 
 //const MongoConnect = require('./helpers/database').MongoConnect;
 const User = require('./models/user')
@@ -28,6 +30,7 @@ const shopRoutes = require('./routes/shop');
 const authRoutes = require('./routes/auth');
 
 const errorController = require('./controllers-mySQL/error.js');
+const { env } = require('process');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
