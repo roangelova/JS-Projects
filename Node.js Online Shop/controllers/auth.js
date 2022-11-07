@@ -6,6 +6,8 @@ const bcrypt = require('bcryptjs')
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport')
 
+const { validationResult } = require('express-session/check')
+
 const transporter = nodemailer.createTransport(sendgridTransport({
     auth: {
         api_key: process.env.SENDGGRID_KEY
@@ -79,9 +81,9 @@ exports.getNewPassword = (req, res, next) => {
             res.render('auth/new-password', {
                 path: '/new-password',
                 pageTitle: 'New password',
-                errorMessage: message, 
-                userId : user._id.toString(),
-                passwordToken : token
+                errorMessage: message,
+                userId: user._id.toString(),
+                passwordToken: token
             });
         })
         .catch(err => console.log(err))
@@ -92,29 +94,29 @@ exports.postNewPassword = (req, res, next) => {
     const userId = req.body.userId;
     const passwordToken = req.body.passwordToken;
     let resetUser;
-  
+
     User.findOne({
-      resetToken: passwordToken,
-      resetTokenExpiration: { $gt: Date.now() },
-      _id: userId
+        resetToken: passwordToken,
+        resetTokenExpiration: { $gt: Date.now() },
+        _id: userId
     })
-      .then(user => {
-        resetUser = user;
-        return bcrypt.hash(newPassword, 12);
-      })
-      .then(hashedPassword => {
-        resetUser.password = hashedPassword;
-        resetUser.resetToken = undefined;
-        resetUser.resetTokenExpiration = undefined;
-        return resetUser.save();
-      })
-      .then(result => {
-        res.redirect('/login');
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
+        .then(user => {
+            resetUser = user;
+            return bcrypt.hash(newPassword, 12);
+        })
+        .then(hashedPassword => {
+            resetUser.password = hashedPassword;
+            resetUser.resetToken = undefined;
+            resetUser.resetTokenExpiration = undefined;
+            return resetUser.save();
+        })
+        .then(result => {
+            res.redirect('/login');
+        })
+        .catch(err => {
+            console.log(err);
+        });
+};
 
 
 exports.postLogin = (req, res, next) => {
@@ -163,6 +165,8 @@ exports.postSignup = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
     const confirmPassword = req.body.confirmPassword;
+
+    const errors = validationResult(req);
 
     User.findOne({ email: email })
         .then(user => {
