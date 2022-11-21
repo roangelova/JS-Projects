@@ -10,7 +10,7 @@ const flash = require('connect-flash')
 
 require('dotenv').config()
 
- const uri = process.env.MONGO_URI;
+const uri = process.env.MONGO_URI;
 
 //const MongoConnect = require('./helpers/database').MongoConnect;
 const User = require('./models/user')
@@ -46,26 +46,46 @@ app.use(csrfProtection);
 app.use(flash()) // now we can use it anywhere in our app on the req 
 
 app.use((req, res, next) => {
-  User.findById(req.session.user._id)
-    .then(user => {
-      req.user = user; //returns a mongoos user
-      next();
-    })
-    .catch(err => console.log(err));
-});
-
-app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isLoggedIn;
   res.locals.csrfTpken = req.csrfToken();
   //set local vars that are paed to every view
   next();
 })
 
+app.use((req, res, next) => {
+
+  if (!req.session.user) {
+    return next()
+  }
+
+  User.findById(req.session.user._id)
+    .then(user => {
+      if (!user) {
+        return next()
+      }
+      req.user = user; //returns a mongoos user
+      next();
+    })
+    .catch(err => {
+     // throw new Error(err) --> this does not GET PASSED TO OUR ERROR-HANDLING MIDDLEWARE,
+     //BECAUSE WE ARE IN AN ASYNC CODE (PROMISE)
+     //WE HAVE TO PASS THE ERROR TO NEXT 
+     next(new Error(err));
+    });
+});
+
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
 
+app.get('/500', errorController.get500)
+
 app.use(errorController.get404);
+
+app.use((error, req, res, next) => {
+  //this defines an error-handlng middleware
+  res.redirect('/500')
+})
 
 //Product.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
 //User.hasMany(Product);

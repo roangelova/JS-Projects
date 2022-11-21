@@ -12,7 +12,7 @@ exports.getAddProduct = (req, res, next) => {
     editing: false,
     hasError: false,
     errorMessage: null,
-    validationErrors : []
+    validationErrors: []
   });
 };
 
@@ -25,9 +25,9 @@ exports.postAddProduct = (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-   return res.status(422).render('admin/edit-product', {
+    return res.status(422).render('admin/edit-product', {
       pageTitle: 'Add Product',
-      path: '/admin/edit-product',
+      path: '/admin/add-product',
       editing: false,
       hasError: true,
       product: {
@@ -35,9 +35,9 @@ exports.postAddProduct = (req, res, next) => {
         imageUrl: imageUrl,
         price: price,
         description: description
-      }, 
+      },
       errorMessage: errors.array()[0].msg,
-      validationErrors : errors.array()
+      validationErrors: errors.array()
     })
   }
 
@@ -48,7 +48,11 @@ exports.postAddProduct = (req, res, next) => {
       res.redirect('/');
     })
     .catch(err => {
-      console.log(err)
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+
+      return next(error);
+      //node will skip all other middlewares and will go to the error-handling middleware
     })
 };
 
@@ -73,10 +77,15 @@ exports.getEditProduct = (req, res, next) => {
       product: product,
       hasError: false,
       errorMessage: null,
-      validationErrors : []
+      validationErrors: []
     })
   })
-    .catch(err => console.log(err))
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+
+      return next(error);
+    })
 };
 
 exports.postEditProduct = (req, res, next) => {
@@ -89,7 +98,7 @@ exports.postEditProduct = (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-   return res.status(422).render('admin/edit-product', {
+    return res.status(422).render('admin/edit-product', {
       pageTitle: 'Edit Product',
       path: '/admin/edit-product',
       editing: true,
@@ -98,9 +107,10 @@ exports.postEditProduct = (req, res, next) => {
         title: title,
         imageUrl: imageUrl,
         price: price,
-        description: description
-      }, 
-      errorMessage: errors.array()[0].msg, 
+        description: description,
+        _id: productId
+      },
+      errorMessage: errors.array()[0].msg,
       validationErrors: errors.array()
     })
   }
@@ -122,7 +132,12 @@ exports.postEditProduct = (req, res, next) => {
       });
     })
 
-    .catch(err => console.log(err));
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+
+      return next(error);
+    })
 };
 
 exports.getProducts = (req, res, next) => {
@@ -134,7 +149,12 @@ exports.getProducts = (req, res, next) => {
         path: '/admin/products'
       });
     })
-    .catch(err => { console.log(err) })
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+
+      return next(error);
+    })
 };
 
 exports.postDeleteProduct = (req, res, next) => {
@@ -144,5 +164,10 @@ exports.postDeleteProduct = (req, res, next) => {
     .then(() => {
       res.redirect('/products');
     })
-    .catch(err => console.log(err));
+    .catch(err => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+
+      return next(error);
+    })
 };
