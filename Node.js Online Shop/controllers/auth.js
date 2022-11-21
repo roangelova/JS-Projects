@@ -130,7 +130,7 @@ exports.postLogin = (req, res, next) => {
                 return  res.render('auth/login', {
                     path: '/login',
                     pageTitle: 'Login',
-                    errorMessage: '', 
+                    errorMessage: null, 
                     oldInput: {
                         email: email, 
                         password : password

@@ -32,14 +32,14 @@ router.post('/signup', [
                     }
                 })
         })
-    ,
-    check('password', 'This is the default passwod error message').isLength({ min: 5, max: 100 }),
-    check('confirmPassword').custom((value, { req }) => {
+    .normalizeEmail(),
+    body('password', 'This is the default passwod error message').isLength({ min: 5, max: 100 }).trim(),
+    body('confirmPassword').custom((value, { req }) => {
         if (value !== req.body.password) {
             throw new Error("Password and confirm password must match!");
         }
         return true;
-    })
+    }).trim()
 ], authController.postSignup);
 
 router.post('/logout', authController.postLogout);
