@@ -23,7 +23,7 @@ exports.getLogin = (req, res, next) => {
     }
     res.render('auth/login', {
         path: '/login',
-        pageTitle: 'Logins',
+        pageTitle: 'Login',
         errorMessage: message
     });
 };
@@ -127,7 +127,15 @@ exports.postLogin = (req, res, next) => {
         .then(user => {
             if (!user) {
                 req.flash('error', 'Invalid email or password');
-                return res.redirect('login');
+                return  res.render('auth/login', {
+                    path: '/login',
+                    pageTitle: 'Login',
+                    errorMessage: '', 
+                    oldInput: {
+                        email: email, 
+                        password : password
+                    }
+                });
             }
             bcrypt.compare(passord, user.password)
                 .then(isMatch => {
@@ -158,14 +166,14 @@ exports.getSignup = (req, res, next) => {
         path: '/signup',
         pageTitle: 'Signup',
         errorMessage: message,
-        oldInput: {email: '', password: '', confirmPassword : ''}
+        oldInput: { email: '', password: '', confirmPassword: '' },
+        validationErrors: []
     });
 };
 
 exports.postSignup = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
-    const confirmPassword = req.body.confirmPassword;
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -173,7 +181,8 @@ exports.postSignup = (req, res, next) => {
             path: '/signup',
             pageTitle: 'Signup',
             errorMessage: errors.array(),
-            oldInput: {email: email, password: password, confirmPassword : req.body.confirmPassword}
+            oldInput: { email: email, password: password, confirmPassword: req.body.confirmPassword },
+            validationErrors: errors.array()
         });
     }
 
