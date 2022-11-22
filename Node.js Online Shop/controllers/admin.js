@@ -1,6 +1,5 @@
 const Product = require('../models/product');
 const mongodb = require('mongodb');
-
 const { validationResult } = require('express-validator');
 
 const ObjectId = mongodb.ObjectId;

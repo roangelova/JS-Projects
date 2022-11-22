@@ -1,3 +1,8 @@
+const fs = require('fs');
+const path = require('path');
+
+const PDFDocument = require('pdfkit');
+
 const Product = require('../models/product');
 const Order = require('../models/order');
 
@@ -98,11 +103,11 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
-  req.user.populate('cart.items.productId') 
+  req.user.populate('cart.items.productId')
     .execPopulate()
     .then(data => {
       let products = data.cart.items.map(i => {
-        return { quantity: i.quantity, product: {...i.productId._doc} } //productId stores he whole product now, as we have populated the data
+        return { quantity: i.quantity, product: { ...i.productId._doc } } //productId stores he whole product now, as we have populated the data
       });
 
       const order = new Order({
@@ -123,14 +128,14 @@ exports.postOrder = (req, res, next) => {
         .catch(err => {
           const error = new Error(err);
           error.httpStatusCode = 500;
-    
+
           return next(error);
         })
     });
 };
 
 exports.getOrders = (req, res, next) => {
- Order.find({"user.userId": req.user._id})
+  Order.find({ "user.userId": req.user._id })
     .then(orders => {
       res.render('shop/orders', {
         path: '/orders',
@@ -152,3 +157,46 @@ exports.getCheckout = (req, res, next) => {
     pageTitle: 'Checkout'
   });
 };
+
+exports.getInvoice = (req, res, next) => {
+  const orderId = req.params.orderId;
+
+  Order.findById(orderId)
+    .then(order => {
+      if (!order)
+        return next(new Error('No such order was found'));
+
+      if (order.user.userId.toString() === req.user._id.toString()) {
+        return next(new Error('Not authorized'))
+      }
+      const invoiceName = 'invoice-' + orderId + '.pdf';
+
+      const invoicePath = path.join('data', 'invoices', invoiceName);
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', 'attachment; filename="invoice"'); //how the content should be served to the client
+
+      let totalPrice = 0;
+
+      const doc = new PDFDocument();
+      doc.pipe(fs.createWriteStream(invoicePath));
+      doc.pipe(res);
+
+      doc.fontSze(26).text('Invoice', {
+        underline: true
+      });
+      doc.text('------------------');
+
+      order.products.forEach(x => {
+        doc.fontSize(14).text(x.pduct.title + ' - ' + x.quantity + ' x ' + '$' + x.product.price);
+        totalPrice += x.quantity * x.product.price;
+      })
+
+      doc.text('---------');
+      doc.fontSize(20).text('Total price: $ ' + totalPrice);
+      doc.end();
+
+    })
+    .catch(err => next(err))
+};
+
